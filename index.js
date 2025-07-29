@@ -7,7 +7,6 @@ const { sendResponse } = require("./utils/response");
 const courseRoutes = require("./routes/course");
 
 const app = express();
-app.use("/api/courses", courseRoutes);
 const authRoutes = require("./routes/auth");
 
 // === Middlewares ===
@@ -24,6 +23,7 @@ app.use(limiter);
 
 // === Routes ===
 app.use("/api/auth", authRoutes);
+app.use("/api/courses", courseRoutes);
 
 
 // === Health Check ===

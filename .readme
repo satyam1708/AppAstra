@@ -1,0 +1,143 @@
+📘 AppAstra API Documentation
+
+Welcome to the AppAstra backend API documentation. This REST API allows users to:
+Authenticate using OTP (email-based)
+View available courses
+Select a course (coming soon)
+Base URL: https://yourdomain.com/api (use http://localhost:5050/api during development)
+🔐 Authentication APIs
+1. Request OTP
+Endpoint: POST /auth/request-otp
+Description: Sends a 6-digit OTP to the user's email.
+✅ Request Body:
+{
+  "email": "student@example.com"
+}
+✅ Response:
+{
+  "status": "success",
+  "code": 200,
+  "message": "OTP sent to your email",
+  "data": null
+}
+2. Verify OTP
+Endpoint: POST /auth/verify-otp
+Description: Verifies the OTP and returns a JWT token.
+✅ Request Body:
+{
+  "email": "student@example.com",
+  "otp": "123456"
+}
+✅ Response:
+{
+  "status": "success",
+  "code": 200,
+  "message": "OTP verified",
+  "data": {
+    "token": "<JWT_TOKEN>"
+  }
+}
+🔒 Use the returned token for accessing protected routes.
+3. Resend OTP
+Endpoint: POST /auth/resend-otp
+Description: Resends a new OTP to the user's email after deleting the old one.
+✅ Request Body:
+{
+  "email": "student@example.com"
+}
+✅ Response:
+{
+  "status": "success",
+  "code": 200,
+  "message": "OTP resent to your email",
+  "data": null
+}
+🎓 Course APIs
+⚠️ All /courses endpoints require JWT token in the Authorization header.
+Authorization: Bearer <your_token_here>
+4. Get All Courses
+Endpoint: GET /courses
+Description: Fetches the list of available courses.
+✅ Sample Response:
+{
+  "status": "success",
+  "code": 200,
+  "message": "Courses fetched successfully",
+  "data": [
+    {
+      "id": "d19c95f2-948b-48d2-bae1-12f3e3ab8d9a",
+      "name": "Class 11",
+      "medium": "Hindi",
+      "duration": "1 year",
+      "createdAt": "2025-07-29T13:21:00.123Z",
+      "updatedAt": "2025-07-29T13:21:00.123Z"
+    },
+    {
+      "id": "88c86c51-44c2-4e12-875e-12345678abcd",
+      "name": "Class 12",
+      "medium": "English",
+      "duration": "1 year",
+      "createdAt": "2025-07-29T13:21:00.123Z",
+      "updatedAt": "2025-07-29T13:21:00.123Z"
+    }
+  ]
+}
+5. Create a Course (Admin only)
+Endpoint: POST /courses
+Description: Adds a new course to the database.
+✅ Request Body:
+{
+  "name": "Class 10",
+  "medium": "English",
+  "duration": "1 year"
+}
+✅ Response:
+{
+  "status": "success",
+  "code": 201,
+  "message": "Course created",
+  "data": {
+    "id": "uuid",
+    "name": "Class 10",
+    "medium": "English",
+    "duration": "1 year",
+    "createdAt": "2025-07-29T13:21:00.123Z",
+    "updatedAt": "2025-07-29T13:21:00.123Z"
+  }
+}
+⚙️ Error Response Format
+For any failed request, the structure is:
+{
+  "status": "fail" | "error",
+  "code": 400 | 401 | 404 | 500,
+  "message": "Error message here",
+  "data": {
+    "error": "Internal error details (optional)"
+  }
+}
+🚦 Rate Limiting
+Each IP is limited to 100 requests per 15 minutes
+Error message on limit exceed:
+{
+  "message": "Too many requests from this IP, please try again later."
+}
+📌 Notes for Frontend Integration
+OTP Flow
+Call POST /auth/request-otp with email
+User checks inbox
+Call POST /auth/verify-otp with email + OTP
+Save token to localStorage
+Redirect to frontend /courses route
+Call GET /courses with Authorization header
+Auth Header Format
+Authorization: Bearer <token>
+Base URL (Dev):
+http://localhost:5050/api
+✅ Health Check
+GET /
+{
+  "status": "success",
+  "code": 200,
+  "message": "✅ AppAstra Backend is Running",
+  "data": null
+}
