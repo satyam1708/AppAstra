@@ -24,3 +24,12 @@ model Otp {
   createdAt DateTime @default(now())
 }
 
+model Course {
+  id          String   @id @default(uuid())
+  name        String
+  medium      String   // "Hindi" or "English"
+  duration    String   // e.g., "1 year", "6 months"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+  
