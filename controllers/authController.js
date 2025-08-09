@@ -13,7 +13,12 @@ exports.requestOTP = async (req, res) => {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
   try {
-    await db.otp.create({ data: { email, otp, expiresAt } });
+    await db.otp.upsert({
+      where: { email },
+      update: { otp, expiresAt },
+      create: { email, otp, expiresAt },
+    });
+
     await sendOTP(email, otp);
 
     return sendResponse(res, 200, "success", "OTP sent to your email");
@@ -23,6 +28,7 @@ exports.requestOTP = async (req, res) => {
     });
   }
 };
+
 
 exports.verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
@@ -69,16 +75,21 @@ exports.resendOTP = async (req, res) => {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
   try {
-    // Delete any existing OTPs for the email before resending
-    await db.otp.deleteMany({ where: { email } });
+    // Use upsert for cleaner logic
+    await db.otp.upsert({
+      where: { email },
+      update: { otp, expiresAt },
+      create: { email, otp, expiresAt },
+    });
 
-    await db.otp.create({ data: { email, otp, expiresAt } });
     await sendOTP(email, otp);
 
     return sendResponse(res, 200, "success", "OTP resent to your email");
   } catch (err) {
+    console.error("Failed to resend OTP:", err);
     return sendResponse(res, 500, "error", "Failed to resend OTP", {
       error: err.message,
     });
   }
 };
+

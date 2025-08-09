@@ -8,21 +8,29 @@ async function requestOtp(email) {
   const otp = generateOtp();
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min expiry
   console.log(`Generated OTP for ${email}: ${otp}`);
+
   // Save OTP in DB (overwrite existing)
   await prisma.otp.upsert({
     where: { email },
     update: { otp, expiresAt },
     create: { email, otp, expiresAt },
   });
+  console.log(`Saved OTP for ${email} in DB`);
 
-  // Send OTP email
-  await resend.emails.send({
-    from: "no-reply@appastra.com",
-    to: email,
-    subject: "Your OTP for AppAstra",
-    html: `<p>Your OTP is <strong>${otp}</strong>. It expires in 5 minutes.</p>`,
-  });
+  try {
+    const sendResult = await resend.emails.send({
+      from: "AppAstra <no-reply@opsolve.in>",
+      to: email,
+      subject: "Your OTP for AppAstra",
+      html: `<p>Your OTP is <strong>${otp}</strong>. It expires in 5 minutes.</p>`,
+    });
+    console.log("Email send result:", sendResult);
+  } catch (error) {
+    console.error("Failed to send OTP email:", error);
+    throw new Error("Failed to send OTP email");
+  }
 }
+
 
 async function verifyOtp(email, otp) {
   const record = await prisma.otp.findUnique({ where: { email } });
