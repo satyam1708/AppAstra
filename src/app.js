@@ -9,6 +9,11 @@ const app = express();
 app.use(express.json());
 app.use(rateLimiter);
 
+// Health check route
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "success", message: "API is healthy" });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/users", userRoutes);
