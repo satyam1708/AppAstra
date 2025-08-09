@@ -1,13 +1,13 @@
 // src/modules/course/course.controller.js
 const courseService = require("./course.service");
-const { successResponse, errorResponse } = require("../../utils/response");
+const { sendResponse, errorResponse } = require("../../utils/response");
 
 async function getCourses(req, res) {
   try {
     const courses = await courseService.getAllCourses();
-    return res.status(200).json(successResponse("Courses fetched successfully", courses));
+    return sendResponse(res, 200, "success", "Courses fetched successfully", courses);
   } catch (err) {
-    return res.status(500).json(errorResponse(err.message));
+    return errorResponse(res, 500, err.message);
   }
 }
 
