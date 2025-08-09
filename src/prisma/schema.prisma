@@ -18,18 +18,17 @@ model User {
 
 model Otp {
   id        String   @id @default(uuid())
-  email     String
+  email     String   @unique
   otp       String
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
 
 model Course {
-  id          String   @id @default(uuid())
-  name        String
-  medium      String   // "Hindi" or "English"
-  duration    String   // e.g., "1 year", "6 months"
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  medium    String // "Hindi" or "English"
+  duration  String // e.g., "1 year", "6 months"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-  

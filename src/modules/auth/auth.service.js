@@ -7,7 +7,7 @@ const { generateOtp } = require("../../utils/otpService");
 async function requestOtp(email) {
   const otp = generateOtp();
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min expiry
-
+  console.log(`Generated OTP for ${email}: ${otp}`);
   // Save OTP in DB (overwrite existing)
   await prisma.otp.upsert({
     where: { email },
